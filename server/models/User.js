@@ -8,7 +8,8 @@ const UserModel = new Schema({
   comments: { type: [ mongoose.Types.ObjectId ], ref: "Comment" },
   posts: { type: [ mongoose.Types.ObjectId ], ref: "Post" },
   savedPosts: { type: [ mongoose.Types.ObjectId ], ref: "Savedpost" },
-  upVotes: { type: [ mongoose.Types.ObjectId ], ref: "Upvote" },
+  upVotes: { type: [ mongoose.Types.ObjectId ], ref: "Post" },
+  notifications: { type: Object },
   communities: { type: [ mongoose.Types.ObjectId ], ref: "Community" },
 });
 

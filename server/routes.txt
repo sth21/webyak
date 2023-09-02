@@ -1,0 +1,34 @@
+POST /auth/login
+POST /auth/signup
+GET  /auth/logout
+POST /auth/delete-account
+
+
+
+GET  /communities
+POST /communities/:communityid/join
+GET  /communities/:communityid/leave
+
+
+
+POST /communities/:communityid/post/add
+POST /communities/:communityid/post/delete
+GET  /communities/:communityid/posts ? sort = ("new" | "hot (default)" | "top")
+GET  /communities/:communityid/posts/:postid
+POST /communities/:communityid/posts/:postid/upvote ? count = (-1 | 1)
+POST /communities/:communityid/posts/:postid/save
+
+
+
+POST /communities/:communityid/posts/:postid/comment/add
+POST /communities/:communityid/posts/:postid/comment/delete
+POST /communities/:communityid/posts/:postid/comment/upvote ? count = (-1 | 1)
+POST /communities/:communityid/posts/:postid/comment/:commentid/save
+
+
+
+GET  /user/:userid/posts
+GET  /user/:userid/comments
+GET  /user/:userid/saved
+GET  /user/:userid/upvotes
+GET  /user/notifications
