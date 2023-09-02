@@ -1,0 +1,8 @@
+/* 
+get all
+get single
+add
+delete
+upvote
+save
+*/

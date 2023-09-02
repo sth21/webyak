@@ -1,0 +1,7 @@
+/* 
+get posts
+get comments
+get saved
+get upvotes
+get notifications
+*/
