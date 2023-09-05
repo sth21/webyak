@@ -1,18 +1,11 @@
-POST /auth/login
-POST /auth/signup
-GET  /auth/logout
-POST /auth/delete-account
-
-
-
 GET  /communities
 POST /communities/:communityid/join
 GET  /communities/:communityid/leave
 
 
 
-POST /communities/:communityid/post/add
-POST /communities/:communityid/post/delete
+POST /communities/:communityid/posts/add
+POST /communities/:communityid/posts/delete
 GET  /communities/:communityid/posts ? sort = ("new" | "hot (default)" | "top")
 GET  /communities/:communityid/posts/:postid
 POST /communities/:communityid/posts/:postid/upvote ? count = (-1 | 1)
