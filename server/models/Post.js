@@ -14,4 +14,4 @@ const PostModel = new Schema({
   time: { type: Date, required: true }
 });
             
-exports.default = mongoose.model("Post", PostModel);
+module.exports = mongoose.model("Post", PostModel);
