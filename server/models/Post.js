@@ -9,7 +9,7 @@ const PostModel = new Schema({
     image: { data: Buffer, contentType: String, required: false },
     ref: { type: mongoose.Types.ObjectId, ref: "Post", required: false },
   },
-  comments: { type: [ mongoose.Types.ObjectId ], ref: "Comment" },
+  comments: { type: Set, of: mongoose.Types.ObjectId, ref: "Comment" },
   upVotes: { type: Number, default: 0 },
   time: { type: Date, required: true }
 });
