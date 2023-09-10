@@ -5,7 +5,7 @@ const Post = require("../../models/Post");
 
 // GET  /communities/:communityid/posts ? sort = ("new" | "hot (default)" | "top")
 exports.GET_POSTS = asyncHandler(async (req, res, next) => {
-
+    // do later i gotta figure out the specific algorithms and make functions
 });
 
 exports.GET_POST = asyncHandler(async (req, res) => {
@@ -45,7 +45,6 @@ exports.ADD_POST = asyncHandler(async (req, res) => {
 
 });
 
-// POST /communities/:communityid/post/delete
 exports.DELETE_POST = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 
@@ -80,12 +79,38 @@ exports.DELETE_POST = asyncHandler(async (req, res) => {
     })
 });
 
-// POST /communities/:communityid/posts/:postid/save
-exports.SAVE_POST = asyncHandler(async (req, res, next) => {
+exports.SAVE_POST = asyncHandler(async (req, res) => {
+    const result = validationResult(req);
 
+    if (result.isEmpty()) {
+        req.user.savedPosts.push(req.post._id);
+        await req.user.save();
+        return res.statusCode(200).json({
+            statusCode: 200,
+            msg: "Successfully saved post"
+        });
+    }
+
+    return res.statusCode(500).json({
+        statusCode: 500,
+        msg: "Unable to save post"
+    });
 });
 
-// POST /communities/:communityid/posts/:postid/upvote ? count = (-1 | 1)
-exports.UPVOTE_POST = asyncHandler(async (req, res, next) => {
+exports.UPVOTE_POST = asyncHandler(async (req, res) => {
+    const result = validationResult(req);
 
+    if (result.isEmpty()) {
+        req.post.upVotes += req.query.count;
+        await req.post.save();
+        return res.statusCode(200).json({
+            statusCode: 200,
+            msg: "Successfully upvoted post"
+        });
+    }
+
+    return res.statusCode(500).json({
+        statusCode: 500,
+        msg: "Unable to upload post"
+    });
 });
