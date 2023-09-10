@@ -79,8 +79,13 @@ exports.UPVOTE_COMMENT = asyncHandler(async (req, res) => {
         req.comment.upVotes += change;
         await req.comment.save();
 
-        // Update user webkarma in community
-        req.user.communities.set(req.community._id, req.user.communities.get(req.community._id) + change);
+        // Add to user's upvoted
+        req.user.upVotes.push(req.comment._id);
+
+        // Update user who created comment's webkarma in community
+        const user = await User.findById(req.comment.user);
+        user.communities.set(req.community._id, user.communities.get(req.community._id) + change);
+        await user.save();
 
         return res.statusCode(200).json({ statusCode: 200, msg: `Successfully ${change === 1 ? "upvoted" : "downvoted"} comment` });
     } 
