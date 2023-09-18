@@ -3,9 +3,65 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Post = require("../../models/Post");
 
-// GET  /communities/:communityid/posts ? sort = ("new" | "hot (default)" | "top")
-exports.GET_POSTS = asyncHandler(async (req, res, next) => {
-    // do later i gotta figure out the specific algorithms and make functions
+exports.GET_POSTS = asyncHandler(async (req, res) => {
+    const result = validationResult(req);
+
+    if (result.isEmpty()) {
+        const { sort, time, page } = req.params;
+        let posts;
+
+        switch (sort) {
+            case "new": {
+
+                posts = await Post
+                    .find()
+                    .sort({time: "desc"})
+                    .skip(page * 100)
+                    .limit(100);
+                break;
+
+            } case "top": {
+
+                let range;
+                switch (time) {
+                    case "1d": {
+                        range = new Date() / 1000 - (60 * 60 * 24);
+                        break;
+                    }
+                    case "1w": {
+                        range = new Date() / 1000 - (60 * 60 * 24 * 7);
+                        break;
+                    }
+                    default: {
+                        range = 0;
+                        break;
+                    }
+                }
+                posts = await Post
+                    .find()
+                    .where("time")
+                    .gt(range)
+                    .sort({time: "desc", upVotes: "desc"})
+                    .skip(page * 100)
+                    .limit(100);
+                break;
+
+            } default: {
+                posts = await Post
+                    .find()
+                    .where("time")
+                    .gt(new Date() / 1000 - (60 * 60 * 24))
+                    .sort({time: "desc", upVotes: "desc"})
+                    .skip(page * 100)
+                    .limit(100);
+                break;
+            }
+        }
+
+        return res.status(200).json({ statusCode: 200, msg: "Successfully got posts", posts });
+    }
+
+    return res.status(500).json({ statusCode: 500, msg: "Could not get posts" });
 });
 
 exports.GET_POST = asyncHandler(async (req, res) => {
