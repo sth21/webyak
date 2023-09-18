@@ -23,4 +23,6 @@ const Strategy = new JWTStrategy({
     });
 });
 
+passport.use(Strategy);
+
 module.exports = Strategy;

@@ -1,31 +1,94 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-underscore-dangle */
 const asyncHandler = require("express-async-handler");
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const User = require("../../models/User");
+const Community = require("../../models/Community");
 
-// POST /auth/login
-exports.LOGIN = asyncHandler(async (req, res, next) => {
-    // take in email and passport
+exports.LOGIN = asyncHandler(async (req, res) => {
+    const result = validationResult(req);
 
-    // confirm them mfers
+    if (result.isEmpty()) {
+        const { email, password } = req.body;
 
-    // issue them a jwt iff good
+        // match user
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({ statusCode: 401, msg: "Could not find a user with the given email" });
+        }
+
+        // match password
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            return res.status(401).json({ statusCode: 401, msg: "Incorrect password" });
+        }
+
+        // assign jwt
+        const secret = fs.readFileSync("../../cryptography/id_rsa_priv.pem");
+
+        const token = jwt.sign({ sub: user._id }, secret, { expiresIn: "1d" });
+
+        return res.status(200).json({ statusCode: 200, msg: "Successfully logged in", token });
+    }
+
+    return res.status(500).json({ statusCode: 500, msg: "Unable to login" });
 });
 
-// POST /auth/signup
-exports.SIGNUP = asyncHandler(async (req, res, next) => {
-    // take in email and passport
+exports.SIGNUP = asyncHandler(async (req, res) => {
+    const result = validationResult(req);
 
-    // hash and salt passport
+    if (result.isEmpty()) {
+        // create user
+        const { email, password } = req.body;
 
-    // add them to their school
+        const saltedPassword = bcrypt.hashSync(password, 16);
+
+        const user = await User.create({ email, password: saltedPassword });
+
+        // get their school
+        const school = await Community.findOne({ emailDomain: email.substring(email.indexOf("@") + 1) });
+
+        if (school) {
+            user.communities.set(school._id, 0);
+            await user.save();
+
+            school.members += 1;
+            await school.save();
+        }
+
+        // assign jwt
+        const secret = fs.readFileSync("../../cryptography/id_rsa_priv.pem");
+
+        const token = jwt.sign({ sub: user._id }, secret, { expiresIn: "1d" });
+
+        return res.status(200).json({ statusCode: 200, msg: "Successfully signed up", token });
+    }
+
+    return res.status(500).json({ statusCode: 500, msg: "Unable to sign up" });
 });
 
-// GET  /auth/logout
-exports.LOGOUT = asyncHandler(async (req, res, next) => {
-    // remove jwt
-});
+exports.DELETE_ACCOUNT = asyncHandler(async (req, res) => {
+    const result = validationResult(req);
 
-// POST /auth/delete-account
-exports.DELETE_ACCOUNT = asyncHandler(async (req, res, next) => {
-    // decrement the number of users in the communities they are in
+    if (result.isEmpty()) {
 
-    // delete their document
+        // Decrement membership of communities user was in
+        for await (const community of req.user.communities.entries()) {
+            community.members -= 1;
+            await community.save();
+        }
+
+        // remove user
+        await req.user.remove();
+
+        res.status(200).json({ statusCode: 200, msg: "Successfully deleted account" });
+
+    }
+
+    return res.status(500).json({ statusCode: 500, msg: "Unable to delete account" });
 });
