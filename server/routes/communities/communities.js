@@ -1,3 +1,4 @@
+const passport = require("passport");
 const router = require("express").Router;
 const asyncHandler = require("express-async-handler");
 
@@ -9,7 +10,7 @@ const Community = require("../../models/Community");
 const Post = require("../../models/Post");
 const Comment = require("../../models/Comment");
 
-
+router.use("/", passport.authenticate("jwt"));
 
 router.param("communityid", asyncHandler(async (req, res, next) => {
     const community = await Community.findById(req.params.communityid);
