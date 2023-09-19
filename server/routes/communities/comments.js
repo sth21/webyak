@@ -7,6 +7,4 @@ router.post("/:commentid/delete", DELETE_COMMENT);
 
 router.post("/:commentid/upvote", UPVOTE_COMMENT);
 
-
-
 exports.default = router;

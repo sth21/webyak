@@ -5,4 +5,4 @@ const text = body("text")
     .custom((val) => val.length < 300)
     .escape();
 
-// image
+exports.default = text;
