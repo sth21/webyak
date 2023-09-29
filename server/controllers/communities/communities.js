@@ -2,6 +2,12 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Community = require("../../models/Community");
 
+exports.COMMUNITY_ID = asyncHandler(async (req, res, next) => {
+    const community = await Community.findById(req.params.communityid).populate().exec();
+    req.community = community;
+    next();
+});
+
 exports.GET_COMMUNITIES = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 

@@ -5,6 +5,12 @@ const { validationResult } = require("express-validator");
 const Comment = require("../../models/Comment");
 const User = require("../../models/User");
 
+exports.COMMENT_ID = asyncHandler(async (req, res, next) => {
+    const comment = await Comment.findById(req.params.commentid).populate().exec();
+    req.comment = comment;
+    next();
+});
+
 exports.ADD_COMMENT = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 

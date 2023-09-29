@@ -2,6 +2,14 @@
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Post = require("../../models/Post");
+const Photo = require("../../models/Photo");
+const { gfs } = require("../../multer");
+
+exports.POST_ID = asyncHandler(async (req, res, next) => {
+    const post = await Post.findById(req.params.postid).populate().exec();
+    req.post = post;
+    next();
+});
 
 exports.GET_POSTS = asyncHandler(async (req, res) => {
     const result = validationResult(req);
@@ -17,7 +25,9 @@ exports.GET_POSTS = asyncHandler(async (req, res) => {
                     .find()
                     .sort({time: "desc"})
                     .skip(page * 100)
-                    .limit(100);
+                    .limit(100)
+                    .populate()
+                    .exec();
                 break;
 
             } case "top": {
@@ -43,7 +53,9 @@ exports.GET_POSTS = asyncHandler(async (req, res) => {
                     .gt(range)
                     .sort({time: "desc", upVotes: "desc"})
                     .skip(page * 100)
-                    .limit(100);
+                    .limit(100)
+                    .populate()
+                    .exec();
                 break;
 
             } default: {
@@ -53,7 +65,9 @@ exports.GET_POSTS = asyncHandler(async (req, res) => {
                     .gt(new Date() / 1000 - (60 * 60 * 24))
                     .sort({time: "desc", upVotes: "desc"})
                     .skip(page * 100)
-                    .limit(100);
+                    .limit(100)
+                    .populate()
+                    .exec();
                 break;
             }
         }
@@ -78,16 +92,33 @@ exports.ADD_POST = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
+        // form photo is file uploaded
+        let photo;
+
+        if (req.file) {
+            photo = new Photo({
+                length: req.file.length,
+                chunkSize: req.file.chunkSize,
+                uploadDate: req.file.uploadDate,
+                filename: req.file.filename,
+                contentType: req.file.contentType,
+            });
+
+            await photo.save();
+        }
+
+        // form post
         const post = new Post({
             user: req.user.id,
             content: {
                 text: req.body.text,
-                image: req.body.image,
-                ref: req.body.ref
+                photo,
             },
-            time: new Date()
+            time: new Date(),
         });
+        
         await post.save();
+
         return res.statusCode(200).json({
             statusCode: 200,
             msg: "Successfully added post"

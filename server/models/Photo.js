@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const FileSchema = new Schema({
+const PhotoSchema = new Schema({
     length: { type: Number, required: true },
     chunkSize: { type: Number, required: true },
     uploadDate: { type: Date, required: true },
@@ -10,4 +10,4 @@ const FileSchema = new Schema({
     contentType: { type: String, required: true },
 });
 
-module.exports = mongoose.model("File", FileSchema);
+module.exports = mongoose.model("Photo", PhotoSchema);
