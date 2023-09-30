@@ -14,7 +14,9 @@ exports.COMMENT_ID = asyncHandler(async (req, res, next) => {
 exports.ADD_COMMENT = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 
-    if (result.isEmpty()) {
+    const hasContent = (req.body.text || req.file);
+
+    if (result.isEmpty() && hasContent) {
         // Create comment
         const comment = new Comment({
             user: req.body.user._id,

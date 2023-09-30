@@ -19,6 +19,8 @@ const storage = new GridFsStorage({
           bucketName: "photos",
           filename: `${Date.now()}_${file.originalname}`,
         }
+
+      // Else don't save it
       default:
         return null;
     }

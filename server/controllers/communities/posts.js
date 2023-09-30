@@ -3,7 +3,6 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Post = require("../../models/Post");
 const Photo = require("../../models/Photo");
-const { gfs } = require("../../multer");
 
 exports.POST_ID = asyncHandler(async (req, res, next) => {
     const post = await Post.findById(req.params.postid).populate().exec();
@@ -11,6 +10,7 @@ exports.POST_ID = asyncHandler(async (req, res, next) => {
     next();
 });
 
+// update req.posts = posts;, call next to get img
 exports.GET_POSTS = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 
@@ -91,7 +91,9 @@ exports.GET_POST = asyncHandler(async (req, res) => {
 exports.ADD_POST = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 
-    if (result.isEmpty()) {
+    const hasContent = (req.body.text || req.file);
+
+    if (result.isEmpty() && hasContent) {
         // form photo is file uploaded
         let photo;
 
