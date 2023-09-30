@@ -27,4 +27,6 @@ app.use('/authentication', AuthRouter);
 app.use('/user', UserRouter);
 app.use("/communities", CommunitiesRouter);
 
+app.use("", (err, req, res) => res.status(500).json({ statusCode: 500, msg: "Internal server error"}));
+
 module.exports = app;
