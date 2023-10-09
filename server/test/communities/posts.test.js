@@ -1,6 +1,6 @@
-const { test } = require("jest");
+const request = require("supertest");
 
-const posts = require("../../controllers/communities/posts");
+const app = require("../init-test");
 
 test("Does not add a post without text or a photo");
 

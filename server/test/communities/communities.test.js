@@ -1,6 +1,6 @@
-const { test } = require("jest");
+const request = require("supertest");
 
-const communities = require("../../controllers/communities/communities");
+const app = require("../init-test");
 
 test("Gets all non-school communities");
 

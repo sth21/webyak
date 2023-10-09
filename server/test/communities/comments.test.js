@@ -1,6 +1,6 @@
-const { test } = require("jest");
+const request = require("supertest");
 
-const comments = require("../../controllers/communities/comments");
+const app = require("../init-test");
 
 test("Adds a comment with just a photo");
 

@@ -1,4 +1,4 @@
-const router = require("express").Router;
+const router = require("express").Router();
 const { GET_USER_POSTS, GET_USER_COMMENTS, GET_USER_SAVED, GET_USER_UPVOTES, GET_USER_NOTIFICATIONS } = require("../../controllers/user/user");
 
 

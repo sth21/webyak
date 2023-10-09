@@ -1,4 +1,4 @@
-const router = require("express").Router;
+const router = require("express").Router();
 const passport = require("passport");
 
 const { COMMUNITY_ID, GET_COMMUNITIES, JOIN_COMMUNITY, LEAVE_COMMUNITY } = require("../../controllers/communities/communities");

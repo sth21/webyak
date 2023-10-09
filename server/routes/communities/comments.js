@@ -1,4 +1,4 @@
-const router = require("express").Router;
+const router = require("express").Router();
 const { upload } = require("../../multer");
 
 const { ADD_COMMENT, DELETE_COMMENT, UPVOTE_COMMENT } = require("../../controllers/communities/comments");

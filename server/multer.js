@@ -1,8 +1,6 @@
 require("dotenv").config();
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
-const Grid = require("gridfs-stream");
-const mongoose = require("mongoose");
 
 const storage = new GridFsStorage({
   url: process.env.MONGO_KEY,
@@ -28,8 +26,4 @@ const storage = new GridFsStorage({
 })
 
 exports.upload = multer({ storage });
-
-const gfs = Grid(mongoose.connection.db);
-
-exports.gfs = gfs;
 

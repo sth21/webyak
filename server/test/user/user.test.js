@@ -1,6 +1,6 @@
-const { test } = require("jest");
+const request = require("supertest");
 
-const user = require("../../controllers/user/user");
+const app = require("../init-test");
 
 test("Get user posts");
 

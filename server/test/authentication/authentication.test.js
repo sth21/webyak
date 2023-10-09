@@ -1,13 +1,34 @@
-const { test } = require("jest");
+const request = require("supertest");
 
-const authentication = require("../../controllers/authentication/authentication");
+const app = require("../init-test");
 
-test("Logs user in with proper credentials");
+const User = require("../../models/User");
 
-test("Does not log user in with improper credentials");
+test("Logs user in with proper credentials", async (done) => {
+    await User.create({ email: "test@gatech.edu", password: "ILoveBuzz" });
 
-test("Signs user up");
+    request(app)
+        .post("authentication/login")
+        .send({ email: "test@gatech.edu", password: "ILoveBuzz" })
+        .set("Accept", "application/json")
+        .expect("Content-Type", /json/)
+        .expect((res) => res.body.should.have.property("token"))
+        .expect(200)
+        .end(done);
+});
 
-test("Deletes user account");
+test("Does not log user in with improper credentials", (done) => {
 
-test("Decrements the communities the deleted user was a part of")
+});
+
+test("Signs user up", (done) => {
+
+});
+
+test("Deletes user account", (done) => {
+
+});
+
+test("Decrements the communities the deleted user was a part of", (done) => {
+
+});

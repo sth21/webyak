@@ -1,4 +1,4 @@
-const router = require("express").Router;
+const router = require("express").Router();
 const { upload } = require("../../multer");
 
 const { GET_POSTS, GET_POST, ADD_POST, DELETE_POST, SAVE_POST, UPVOTE_POST } = require("../../controllers/communities/posts");

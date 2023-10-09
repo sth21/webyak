@@ -2,18 +2,18 @@
 const express = require('express');
 const logger = require('morgan');
 const passport = require('passport');
-const Strategy = require('./strategy');
+const Strategy = require('../strategy');
 
 // Init JWT Strategy
 passport.use(Strategy);
 
 // Init DB
-require('./mongo');
+require('./mongo-test');
 
 // Import Routers
-const AuthRouter = require("./routes/authentication/authentication");
-const UserRouter = require("./routes/user/user");
-const CommunitiesRouter = require("./routes/communities/communities");
+const AuthRouter = require("../routes/authentication/authentication");
+const UserRouter = require("../routes/user/user");
+const CommunitiesRouter = require("../routes/communities/communities");
 
 const app = express();
 
