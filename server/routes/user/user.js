@@ -4,7 +4,7 @@ const passport = require("passport");
 
 const { GET_USER_POSTS, GET_USER_COMMENTS, GET_USER_SAVED, GET_USER_UPVOTES, GET_USER_NOTIFICATIONS } = require("../../controllers/user/user");
 
-router.use(passport.authenticate("jwt"));
+router.use(passport.authenticate("jwt", { session: false }));
 
 router.get("/:userid/posts", GET_USER_POSTS);
 

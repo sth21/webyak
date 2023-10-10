@@ -8,22 +8,19 @@ const secret = fs.readFileSync("./cryptography/id_rsa_pub.pem");
 const Strategy = new JWTStrategy({
     jwtFromRequest: Extractor.fromAuthHeaderAsBearerToken(),
     secretOrKey: secret,
-}, (jwtPayload, done) => {
-
-    User.findById(jwtPayload.sub, (err, user) => {
-        // Error
-        if (err) {
-            return done(err, false);
-        }
-
-        // User found
-        if (user) {
+}, async (jwtPayload, done) => {
+    try {
+        const user = await User.findById(jwtPayload.sub);
+        
+        if (user !== null) {
             return done(null, user);
         }
         
-        // No user found
         return done(null, false);
-    });
+
+    } catch (err) {
+        return done(err, false);
+    }
 });
 
 module.exports = Strategy;

@@ -19,7 +19,7 @@ exports.LOGIN = asyncHandler(async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({ statusCode: 401, msg: "Could not find a user with the given email" });
+            return res.status(401).json({ statusCode: 401, msg: "No account registered with provided email" });
         }
 
         // match password
@@ -37,7 +37,7 @@ exports.LOGIN = asyncHandler(async (req, res) => {
         return res.status(200).json({ statusCode: 200, msg: "Successfully logged in", token });
     }
 
-    return res.status(500).json({ statusCode: 500, msg: "Unable to login" });
+    return res.status(500).json({ statusCode: 500, msg: "Unable to login", errors: result.array() });
 });
 
 exports.SIGNUP = asyncHandler(async (req, res) => {
@@ -70,7 +70,7 @@ exports.SIGNUP = asyncHandler(async (req, res) => {
         return res.status(200).json({ statusCode: 200, msg: "Successfully signed up", token });
     }
 
-    return res.status(500).json({ statusCode: 500, msg: "Unable to sign up" });
+    return res.status(500).json({ statusCode: 500, msg: "Unable to sign up", errors: result.array() });
 });
 
 exports.DELETE_ACCOUNT = asyncHandler(async (req, res) => {
@@ -79,17 +79,18 @@ exports.DELETE_ACCOUNT = asyncHandler(async (req, res) => {
     if (result.isEmpty()) {
 
         // Decrement membership of communities user was in
-        for await (const community of req.user.communities.entries()) {
+        for await (const communityId of req.user.communities.keys()) {
+            const community = await Community.findById(communityId);
             community.members -= 1;
             await community.save();
         }
 
         // remove user
-        await req.user.remove();
+        await User.deleteOne({ _id: req.user._id });
 
         res.status(200).json({ statusCode: 200, msg: "Successfully deleted account" });
 
     }
 
-    return res.status(500).json({ statusCode: 500, msg: "Unable to delete account" });
+    return res.status(500).json({ statusCode: 500, msg: "Unable to delete account", errors: result.array() });
 });

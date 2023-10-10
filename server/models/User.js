@@ -10,7 +10,7 @@ const UserModel = new Schema({
   savedPosts: { type: [mongoose.Types.ObjectId], ref: "Savedpost" },
   upVotes: { type: [mongoose.Types.ObjectId], ref: "Post" },
   notifications: { type: [Object] },
-  communities: { type: Map, of: Number },
+  communities: { type: Map, of: Number, default: new Map() },
 });
 
 module.exports = mongoose.model("User", UserModel);

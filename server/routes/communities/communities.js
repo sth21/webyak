@@ -8,7 +8,7 @@ const { COMMENT_ID } = require("../../controllers/communities/comments");
 const PostsRouter = require("./posts");
 const CommentsRouter = require("./comments");
 
-router.use(passport.authenticate("jwt"));
+router.use(passport.authenticate("jwt", { session: false }));
 
 router.param("communityid", COMMUNITY_ID);
 
