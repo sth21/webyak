@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { upload } = require("../../multer");
+const upload = require("../../multer-storage");
 
 const { GET_POSTS, GET_POST, ADD_POST, DELETE_POST, SAVE_POST, UPVOTE_POST } = require("../../controllers/communities/posts");
 const { VAL_POST_TEXT, VAL_POST_UPVOTE } = require("../../validators/post");
@@ -18,4 +18,4 @@ router.post("/upvote", VAL_POST_UPVOTE, UPVOTE_POST);
 
 
 
-exports.default = router;
+module.exports = router;

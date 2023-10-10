@@ -2,6 +2,8 @@ const request = require("supertest");
 
 const app = require("../init-test");
 
+/*
+
 test("Adds a comment with just a photo");
 
 test("Adds the comment to the user and to the post")
@@ -20,3 +22,4 @@ test("Does not upvote a comment given a count greater than 1");
 
 test("Does not upvote a comment given a count less than -1");
 
+*/

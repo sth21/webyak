@@ -5,6 +5,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const path = require("path");
 const User = require("../../models/User");
 const Community = require("../../models/Community");
 
@@ -29,9 +30,9 @@ exports.LOGIN = asyncHandler(async (req, res) => {
         }
 
         // assign jwt
-        const secret = fs.readFileSync("../../cryptography/id_rsa_priv.pem");
+        const secret = fs.readFileSync(path.join(__dirname, "/../../cryptography/id_rsa_priv.pem"));
 
-        const token = jwt.sign({ sub: user._id }, secret, { expiresIn: "1d" });
+        const token = jwt.sign({ sub: user._id }, secret, { expiresIn: "1d", algorithm: "RS256" });
 
         return res.status(200).json({ statusCode: 200, msg: "Successfully logged in", token });
     }
@@ -62,9 +63,9 @@ exports.SIGNUP = asyncHandler(async (req, res) => {
         }
 
         // assign jwt
-        const secret = fs.readFileSync("../../cryptography/id_rsa_priv.pem");
+        const secret = fs.readFileSync(path.join(__dirname, "/../../cryptography/id_rsa_priv.pem"));
 
-        const token = jwt.sign({ sub: user._id }, secret, { expiresIn: "1d" });
+        const token = jwt.sign({ sub: user._id }, secret, { expiresIn: "1d", algorithm: "RS256" });
 
         return res.status(200).json({ statusCode: 200, msg: "Successfully signed up", token });
     }

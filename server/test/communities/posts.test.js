@@ -2,6 +2,8 @@ const request = require("supertest");
 
 const app = require("../init-test");
 
+/*
+
 test("Does not add a post without text or a photo");
 
 test("Adds a post with just a text");
@@ -23,3 +25,5 @@ test("Does not upvote a post given a count of 0");
 test("Does not upvote a post given a count greater than 1");
 
 test("Does not upvote a post given a count less than -1");
+
+*/

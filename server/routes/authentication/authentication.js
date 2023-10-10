@@ -9,4 +9,4 @@ router.post("/signup", SIGNUP);
 
 router.get("/delete-account", passport.authenticate("jwt"), DELETE_ACCOUNT);
 
-exports.default = router;
+module.exports = router;

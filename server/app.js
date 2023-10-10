@@ -21,6 +21,7 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(passport.initialize());
 
 // Set up routers
 app.use('/authentication', AuthRouter);
@@ -28,6 +29,6 @@ app.use('/user', UserRouter);
 app.use("/communities", CommunitiesRouter);
 
 // Error handler
-app.use(" ", (err, req, res) => res.status(500).json({ statusCode: 500, msg: "Internal server error"}));
+app.use((err, req, res) => res.status(500).json({ statusCode: 500, msg: "Internal server error"}));
 
 module.exports = app;
