@@ -16,15 +16,15 @@ router.param("postid", POST_ID);
 
 router.param("commentid", COMMENT_ID);
 
-router.get("/communities", GET_COMMUNITIES);
+router.get("/", GET_COMMUNITIES);
 
-router.post("/communities/:communityid/join", JOIN_COMMUNITY);
+router.post("/:communityid/join", JOIN_COMMUNITY);
 
-router.get("/communities/:communityid/leave", LEAVE_COMMUNITY);
+router.get("/:communityid/leave", LEAVE_COMMUNITY);
 
-router.use("/communities/:communityid/posts", PostsRouter);
+router.use("/:communityid/posts", PostsRouter);
 
-router.use("/communities/:communityid/posts/:postid/comments", CommentsRouter);
+router.use("/:communityid/posts/:postid/comments", CommentsRouter);
 
 
 

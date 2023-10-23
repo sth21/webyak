@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 // Middleware
 const express = require('express');
 const logger = require('morgan');
@@ -26,6 +28,6 @@ app.use('/user', UserRouter);
 app.use('/communities', CommunitiesRouter);
 
 // Error handler
-app.use((err, req, res) => res.status(500).json({ statusCode: 500, msg: "Internal server error"}));
+app.use((err, req, res, next) => res.status(500).json({ statusCode: 500, msg: "Internal server error", err}));
 
 module.exports = app;

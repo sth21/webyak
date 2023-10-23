@@ -2,11 +2,23 @@ const request = require("supertest");
 
 const app = require("../init-test");
 
+const User = require("../../models/User");
+const Community = require("../../models/Community");
+const Post = require("../../models/Post");
+const Comment = require("../../models/Comment");
+
 /*
+test("Does not allow a comment to be added without a photo or text", () => {
+
+});
+
+test("Does not allow a comment to be added with a video");
 
 test("Adds a comment with just a photo");
 
-test("Adds the comment to the user and to the post")
+test("Adds a comment with just text");
+
+test("Adds the comment to the user and to the post");
 
 test("Deletes a comment");
 

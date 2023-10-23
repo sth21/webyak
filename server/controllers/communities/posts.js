@@ -89,12 +89,14 @@ exports.GET_POST = asyncHandler(async (req, res) => {
 });
 
 exports.ADD_POST = asyncHandler(async (req, res) => {
+    req.body.tim = "tim";
+
     const result = validationResult(req);
 
     const hasContent = (req.body.text || req.file);
 
     if (result.isEmpty() && hasContent) {
-        // form photo is file uploaded
+        let post;
         let photo;
 
         if (req.file) {
@@ -107,31 +109,43 @@ exports.ADD_POST = asyncHandler(async (req, res) => {
             });
 
             await photo.save();
+
+            post = new Post({
+                user: req.user._id,
+                content: {
+                    text: req.body.text,
+                    photo: photo._id,
+                },
+                time: new Date(),
+            });
+
+            await post.save();
+        } else {
+            post = new Post({
+                user: req.user._id,
+                content: {
+                    text: req.body.text,
+                },
+                time: new Date(),
+            });
+
+            await post.save();
         }
 
-        // form post
-        const post = new Post({
-            user: req.user.id,
-            content: {
-                text: req.body.text,
-                photo,
-            },
-            time: new Date(),
-        });
-        
-        await post.save();
+        // add post to community
+        req.community.posts.push(post._id);
+        await req.community.save();
 
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully added post"
         });
     }
 
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: "Unsuccessfully added post"
-    })
-
+    });
 });
 
 exports.DELETE_POST = asyncHandler(async (req, res) => {

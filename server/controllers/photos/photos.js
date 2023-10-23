@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const { gfs } = require("../../multer");
+const { gfs } = require("../../multer-stream");
 
 exports.DELETE_PHOTO = asyncHandler(async (req, res, next) => {
     if (req.post) {
