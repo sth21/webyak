@@ -8,6 +8,14 @@ const { COMMENT_ID } = require("../../controllers/communities/comments");
 const PostsRouter = require("./posts");
 const CommentsRouter = require("./comments");
 
+router.use((req, res, next) => {
+    if (!req.headers.authorization) {
+        return res.status(500).json({ statusCode: 500, msg: "User needs to log in with credentials" });
+    }
+
+    return next();
+});
+
 router.use(passport.authenticate("jwt", { session: false }));
 
 router.param("communityid", COMMUNITY_ID);
