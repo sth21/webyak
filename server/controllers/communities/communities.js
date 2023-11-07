@@ -13,7 +13,7 @@ exports.GET_COMMUNITIES = asyncHandler(async (req, res) => {
 
     if (result.isEmpty()) {
         const communities = await Community.find();
-        return res.statusCode(200).json(communities.filter((community) => !community.emailDomain));
+        return res.status(200).json(communities.filter((community) => !community.emailDomain));
     }
 
     return res.statusCode(500).json({
@@ -28,7 +28,7 @@ exports.JOIN_COMMUNITY = asyncHandler(async (req, res) => {
     if (result.isEmpty()) {
         req.user.communities.set(req.params.communityid, 0);
         await req.user.save();
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully joined community"
         });
@@ -46,13 +46,13 @@ exports.LEAVE_COMMUNITY = asyncHandler(async (req, res) => {
     if (result.isEmpty()) {
         req.user.communities.delete(req.params.communityid);
         await req.user.save();
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully left community"
         });
     }
 
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: "Unable to leave community"
     })

@@ -7,7 +7,7 @@ let gfs;
 
 connection.once("open", () => {
     gfs = Grid(connection.db, mongoose.mongo);
-    gfs.collection("photos");
+    gfs.collection("images");
 });
 
 module.exports = gfs;

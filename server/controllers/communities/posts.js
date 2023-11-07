@@ -89,8 +89,6 @@ exports.GET_POST = asyncHandler(async (req, res) => {
 });
 
 exports.ADD_POST = asyncHandler(async (req, res) => {
-    req.body.tim = "tim";
-
     const result = validationResult(req);
 
     const hasContent = (req.body.text || req.file);
@@ -101,11 +99,11 @@ exports.ADD_POST = asyncHandler(async (req, res) => {
 
         if (req.file) {
             photo = new Photo({
-                length: req.file.length,
                 chunkSize: req.file.chunkSize,
                 uploadDate: req.file.uploadDate,
                 filename: req.file.filename,
                 contentType: req.file.contentType,
+                photoId: req.file.id
             });
 
             await photo.save();
@@ -136,6 +134,10 @@ exports.ADD_POST = asyncHandler(async (req, res) => {
         req.community.posts.push(post._id);
         await req.community.save();
 
+        // add post to user
+        req.user.posts.push(post._id);
+        await req.user.save();
+
         return res.status(200).json({
             statusCode: 200,
             msg: "Successfully added post"
@@ -149,37 +151,29 @@ exports.ADD_POST = asyncHandler(async (req, res) => {
 });
 
 exports.DELETE_POST = asyncHandler(async (req, res) => {
-    const result = validationResult(req);
+    // delete post from user
+    const postUserIndex = req.user.posts.findIndex((_id) => _id.equals(req.post._id));
 
-    if (result.isEmpty()) {
-        // delete post from user
-        const postUserIndex = req.user.posts.findIndex((post) => post._id === req.post._id);
-        req.user.posts.splice(postUserIndex, postUserIndex + 1);
-        await req.user.save();
+    req.user.posts.splice(postUserIndex, 1);
+    await req.user.save();
 
-        // delete post from community
-        const postCommunityIndex = req.community.posts.findIndex((post) => post._id === req.post._id);
-        req.community.posts.splice(postCommunityIndex, postCommunityIndex + 1);
-        await req.community.save();
+    // delete post from community
+    const postCommunityIndex = req.community.posts.findIndex((_id) => _id.equals(req.post._id));
+    req.community.posts.splice(postCommunityIndex, 1);
+    await req.community.save();
 
-        // delete comments from post
-        req.post.comments.forEach(async (comment) => {
-            await Comment.deleteOne({ _id: comment._id});
-        })
+    // delete comments from post
+    req.post.comments.forEach(async (_id) => {
+        await Comment.deleteOne({ _id });
+    });
 
-        // delete post
-        await Post.deleteOne({ _id: req.post._id });
+    // delete post
+    await Post.deleteOne({ _id: req.post._id });
 
-        return res.statusCode(200).json({
-            statusCode: 200,
-            msg: "Successfully deleted post"
-        });
-    }
-
-    return res.statusCode(500).json({
-        statusCode: 500,
-        msg: "Unable to delete post"
-    })
+    return res.status(200).json({
+        statusCode: 200,
+        msg: "Successfully deleted post"
+    });
 });
 
 exports.SAVE_POST = asyncHandler(async (req, res) => {
@@ -188,13 +182,13 @@ exports.SAVE_POST = asyncHandler(async (req, res) => {
     if (result.isEmpty()) {
         req.user.savedPosts.push(req.post._id);
         await req.user.save();
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully saved post"
         });
     }
 
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: "Unable to save post"
     });
@@ -206,13 +200,13 @@ exports.UPVOTE_POST = asyncHandler(async (req, res) => {
     if (result.isEmpty()) {
         req.post.upVotes += req.query.count;
         await req.post.save();
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully upvoted post"
         });
     }
 
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: "Unable to upload post"
     });

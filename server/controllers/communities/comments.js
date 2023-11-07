@@ -34,13 +34,13 @@ exports.ADD_COMMENT = asyncHandler(async (req, res) => {
         user.comments.add(comment._id);
         await user.save();
 
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully added comment"
         });
     } 
     
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: "Unable to add comment"
     });
@@ -65,13 +65,13 @@ exports.DELETE_COMMENT = asyncHandler(async (req, res) => {
         // update user webkarma in community
         req.user.communities.set(req.community._id, req.user.communities.get(req.community._id) - req.comment.upVotes);
 
-        return res.statusCode(200).json({
+        return res.status(200).json({
             statusCode: 200,
             msg: "Successfully deleted comment"
         })
     }
     
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: "Unable to delete comment"
     });
@@ -95,10 +95,10 @@ exports.UPVOTE_COMMENT = asyncHandler(async (req, res) => {
         user.communities.set(req.community._id, user.communities.get(req.community._id) + change);
         await user.save();
 
-        return res.statusCode(200).json({ statusCode: 200, msg: `Successfully ${change === 1 ? "upvoted" : "downvoted"} comment` });
+        return res.status(200).json({ statusCode: 200, msg: `Successfully ${change === 1 ? "upvoted" : "downvoted"} comment` });
     } 
     
-    return res.statusCode(500).json({
+    return res.status(500).json({
         statusCode: 500,
         msg: `Unable to ${change === 1 ? "upvote" : "downvote"} comment`
     });

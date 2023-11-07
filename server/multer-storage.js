@@ -2,14 +2,8 @@ require("dotenv").config();
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
 
-/* 
-Note for when you end up testing this after the painful testing incident of 10/21: 
-Need to make new storage object cuz url wont be accessible for testing. 
-Your welcome Sam.
-*/
-
-const storage = new GridFsStorage({
-  url: process.env.MONGO_KEY,
+const storage = (url) => new GridFsStorage({
+  url,
   file: (req, file) => {
     // If it is an image, save to photos bucket
     switch (file.mimetype) {
@@ -30,4 +24,4 @@ const storage = new GridFsStorage({
   },
 });
 
-module.exports = multer({ storage });
+module.exports = (url) => multer({ storage: storage(url) }).single("photo");

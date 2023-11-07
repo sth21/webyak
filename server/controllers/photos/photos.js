@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const { gfs } = require("../../multer-stream");
+const gfs = require("../../multer-stream");
 
 exports.DELETE_PHOTO = asyncHandler(async (req, res, next) => {
     if (req.post) {
@@ -23,3 +23,20 @@ exports.DELETE_PHOTO = asyncHandler(async (req, res, next) => {
 
     next();
 });
+
+exports.BLOCK_VIDEOS = (req, res, next) => {
+    if (req.file) {
+        switch (req.file.mimetype) {
+        case "image/jpeg":
+        case "image/png":
+        case "image/jpg":
+        case "image/heic":
+        case "image/webp":
+            break;
+        default:
+            return res.statusCode(500).json({ statusCode: 500, msg: "Cannot upload a video" });
+        }
+    }
+
+    return next();
+}
