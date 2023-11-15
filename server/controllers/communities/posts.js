@@ -196,10 +196,11 @@ exports.SAVE_POST = asyncHandler(async (req, res) => {
 
 exports.UPVOTE_POST = asyncHandler(async (req, res) => {
     const result = validationResult(req);
-
+    
     if (result.isEmpty()) {
-        req.post.upVotes += req.query.count;
+        req.post.upVotes += parseInt(req.query.count, 10);
         await req.post.save();
+
         return res.status(200).json({
             statusCode: 200,
             msg: "Successfully upvoted post"

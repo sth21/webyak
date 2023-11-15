@@ -1,12 +1,13 @@
-const { body, param } = require("express-validator");
+const { body, query } = require("express-validator");
 
 exports.VAL_POST_TEXT = body("text")
     .trim()
     .custom((val) => val.length < 300)
     .escape();
 
-exports.VAL_POST_UPVOTE = param("upvote")
+exports.VAL_POST_UPVOTE = query("count")
     .custom((val) => {
-        if (Math.abs(val) === 1) return true;
+        const numericVal = Math.abs(parseInt(val, 10));
+        if (numericVal === 1) return true;
         throw new Error("Upvote must be 1 or -1");
     });

@@ -15,9 +15,9 @@ router.post("/add", VAL_POST_TEXT, UPLOAD_PHOTO, BLOCK_VIDEOS, ADD_POST);
 
 router.post("/delete/:postid", DELETE_POST);
 
-router.post("/save", SAVE_POST);
+router.post("/save/:postid", SAVE_POST);
 
-router.post("/upvote", VAL_POST_UPVOTE, UPVOTE_POST);
+router.post("/upvote/:postid", VAL_POST_UPVOTE, UPVOTE_POST);
 
 router.get("/:postid", GET_POST); 
 

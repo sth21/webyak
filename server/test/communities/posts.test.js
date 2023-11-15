@@ -7,7 +7,6 @@ const app = require("../init-test");
 const User = require("../../models/User");
 const Community = require("../../models/Community");
 const Post = require("../../models/Post");
-const Photo = require("../../models/Photo");
 
 const { connectDB, disconnectDB, disconnectCollections } = require("../init-test-db");
 
@@ -166,32 +165,105 @@ test("Deletes a post", async () => {
 
     expect(deleteResponse.headers["content-type"]).toMatch(/json/);
     expect(deleteResponse.status).toBe(200);
+
+    const user = await User.findOne();
+    expect(user.posts.length).toBe(0);
+
+    const community = await Community.findOne();
+    expect(community.posts.length).toBe(0);
+
+    const noPost = await Post.findOne();
+    expect(noPost).toBeNull();
+
 }, 20000);
 
-/*
+test("Upvotes a post", async () => {
+    const token = await makeUser();
 
-test("Deletes the post from the user and the community", async () => {
+    const testCommunity = new Community({ name: "Test" });
+    await testCommunity.save();
 
-});
+    const createResponse = await request(app)
+        .post(`/communities/${testCommunity._id}/posts/add`)
+        .set('Authorization', `Bearer ${token}`)
+        .attach("photo", "/Users/sam/Javascript/webyak/server/test/test.png")
+        .field("test", "This is my first post!")
+        .set("Accept", "application/json");
 
-test("Upvotes a post with a count of 1", async () => {
+    expect(createResponse.headers["content-type"]).toMatch(/json/);
+    expect(createResponse.status).toBe(200);
 
-});
+    const post = await Post.findOne();
 
-test("Upvotes a post with a count of -1", async () => {
+    const upvoteResponse = await request(app)
+        .post(`/communities/${testCommunity._id}/posts/upvote/${post._id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .query({ count: 1 });
 
-});
+    expect(upvoteResponse.headers["content-type"]).toMatch(/json/);
+    expect(upvoteResponse.status).toBe(200);
 
-test("Does not upvote a post given a count of 0", async () => {
+    const postAfter = await Post.findOne();
+    expect(postAfter.upVotes).toBe(1);
 
-});
+}, 20000);
 
-test("Does not upvote a post given a count greater than 1", async () => {
+test("Downvotes a post", async () => {
+    const token = await makeUser();
 
-});
+    const testCommunity = new Community({ name: "Test" });
+    await testCommunity.save();
 
-test("Does not upvote a post given a count less than -1", async () => {
+    const createResponse = await request(app)
+        .post(`/communities/${testCommunity._id}/posts/add`)
+        .set('Authorization', `Bearer ${token}`)
+        .attach("photo", "/Users/sam/Javascript/webyak/server/test/test.png")
+        .field("test", "This is my first post!")
+        .set("Accept", "application/json");
 
-});
+    expect(createResponse.headers["content-type"]).toMatch(/json/);
+    expect(createResponse.status).toBe(200);
 
-*/
+    const post = await Post.findOne();
+
+    const downvoteResponse = await request(app)
+        .post(`/communities/${testCommunity._id}/posts/upvote/${post._id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .query({ count: -1 });
+
+    expect(downvoteResponse.headers["content-type"]).toMatch(/json/);
+    expect(downvoteResponse.status).toBe(200);
+
+    const postAfter = await Post.findOne();
+    expect(postAfter.upVotes).toBe(-1);
+}, 20000);
+
+test("Fails to change upvotes on a post when not -1 or 1", async () => {
+    const token = await makeUser();
+
+    const testCommunity = new Community({ name: "Test" });
+    await testCommunity.save();
+
+    const createResponse = await request(app)
+        .post(`/communities/${testCommunity._id}/posts/add`)
+        .set('Authorization', `Bearer ${token}`)
+        .attach("photo", "/Users/sam/Javascript/webyak/server/test/test.png")
+        .field("test", "This is my first post!")
+        .set("Accept", "application/json");
+
+    expect(createResponse.headers["content-type"]).toMatch(/json/);
+    expect(createResponse.status).toBe(200);
+
+    const post = await Post.findOne();
+
+    const upvoteResponse = await request(app)
+        .post(`/communities/${testCommunity._id}/posts/upvote/${post._id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .query({ count: 3 });
+
+    expect(upvoteResponse.headers["content-type"]).toMatch(/json/);
+    expect(upvoteResponse.status).toBe(500);
+
+    const postAfter = await Post.findOne();
+    expect(postAfter.upVotes).toBe(0);
+}, 20000);
