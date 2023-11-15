@@ -4,9 +4,10 @@ const { Schema } = mongoose;
 
 const CommentModel = new Schema({
   user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+  post: { type: mongoose.Types.ObjectId, ref: "Post", required: true },
   content: { 
-    text: { type: String },
-    image: { data: Buffer, contentType: String },
+    text: { type: String, },
+    photo: { data: Buffer, contentType: String, },
   },
   upVotes: { type: Number, default: 0 },
   time: { type: Date, required: true },

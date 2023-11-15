@@ -3,7 +3,7 @@
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Comment = require("../../models/Comment");
-const User = require("../../models/User");
+const Photo = require("../../models/Photo");
 
 exports.COMMENT_ID = asyncHandler(async (req, res, next) => {
     const comment = await Comment.findById(req.params.commentid).populate().exec();
@@ -17,22 +17,52 @@ exports.ADD_COMMENT = asyncHandler(async (req, res) => {
     const hasContent = (req.body.text || req.file);
 
     if (result.isEmpty() && hasContent) {
-        // Create comment
-        const comment = new Comment({
-            user: req.body.user._id,
-            content: req.body.content,
-            time: new Date(),
-        });
-        await comment.save();
+        let comment;
+        let photo;
+
+        // Add comment
+        if (req.file) {
+            photo = new Photo({
+                chunkSize: req.file.chunkSize,
+                uploadDate: req.file.uploadDate,
+                filename: req.file.filename,
+                contentType: req.file.contentType,
+                photoId: req.file.id
+            });
+
+            await photo.save();
+
+            comment = new Comment({
+                user: req.user._id,
+                post: req.post._id,
+                content: {
+                    text: req.body.text,
+                    photo: photo._id,
+                },
+                time: new Date(),
+            });
+
+            await comment.save();
+        } else {
+            comment = new Comment({
+                user: req.user._id,
+                post: req.post._id,
+                content: {
+                    text: req.body.text,
+                },
+                time: new Date(),
+            });
+
+            await comment.save();
+        }
         
         // Add comment to post
-        req.post.comments.add(comment._id);
+        req.post.comments.push(comment._id);
         await req.post.save();
 
         // Add comment to user
-        const user = await User.findById(req.user._id);
-        user.comments.add(comment._id);
-        await user.save();
+        req.user.comments.push(comment._id);
+        await req.user.save();
 
         return res.status(200).json({
             statusCode: 200,
@@ -50,25 +80,24 @@ exports.DELETE_COMMENT = asyncHandler(async (req, res) => {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
-        // delete from user
-        const user = await User.findById(req.user._id);
-        user.comments.delete(req.comment._id);
-        await user.save();
+        // delete comment from user
+        const commentUserIndex = req.user.comments.findIndex((_id) => _id.equals(req.comment._id));
 
-        // delete from post
-        req.post.comments.delete(req.comment._id);
+        req.user.comments.splice(commentUserIndex, 1);
+        await req.user.save();
+
+        // delete comment from post
+        const commentPostIndex = req.post.comments.findIndex((_id) => _id.equals(req.comment._id));
+        req.post.comments.splice(commentPostIndex, 1);
         await req.post.save();
 
         // delete comment
         await Comment.deleteOne({ _id: req.comment._id });
 
-        // update user webkarma in community
-        req.user.communities.set(req.community._id, req.user.communities.get(req.community._id) - req.comment.upVotes);
-
         return res.status(200).json({
             statusCode: 200,
             msg: "Successfully deleted comment"
-        })
+        });
     }
     
     return res.status(500).json({
@@ -79,27 +108,19 @@ exports.DELETE_COMMENT = asyncHandler(async (req, res) => {
 
 exports.UPVOTE_COMMENT = asyncHandler(async (req, res) => {
     const result = validationResult(req);
-    
-    const change = (req.params.count === "1") ? 1 : -1;
 
     if (result.isEmpty()) {
-        // Update comment upvotes
-        req.comment.upVotes += change;
+        req.comment.upVotes += parseInt(req.query.count, 10);
         await req.comment.save();
 
-        // Add to user's upvoted
-        req.user.upVotes.push(req.comment._id);
-
-        // Update user who created comment's webkarma in community
-        const user = await User.findById(req.comment.user);
-        user.communities.set(req.community._id, user.communities.get(req.community._id) + change);
-        await user.save();
-
-        return res.status(200).json({ statusCode: 200, msg: `Successfully ${change === 1 ? "upvoted" : "downvoted"} comment` });
+        return res.status(200).json({ 
+            statusCode: 200, 
+            msg: "Successfully upvoted comment`" 
+        });
     } 
     
     return res.status(500).json({
         statusCode: 500,
-        msg: `Unable to ${change === 1 ? "upvote" : "downvote"} comment`
+        msg: "Unable to upvote comment"
     });
 });
